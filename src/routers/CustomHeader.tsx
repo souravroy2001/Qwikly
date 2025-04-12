@@ -4,16 +4,17 @@ import Ionicons from "react-native-vector-icons/Ionicons"
 import FontAwesome from "react-native-vector-icons/FontAwesome"
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6"
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import useThemeStore from 'zustand/themeState';
+import useAuthStore from 'zustand/authStore';
+import { navigate } from './NavigationService';
+import { Screen } from 'react-native-screens';
 
 type CustomHeaderTitlePrams = {
     Home: undefined;
 }
 
 function CustomHeaderTitle(): React.JSX.Element {
-    const { isDarkMode } = useThemeStore()
+    const { isDarkMode } = useAuthStore()
     const navigation = useNavigation<StackNavigationProp<CustomHeaderTitlePrams>>()
 
     const logoImage = isDarkMode === "dark"
@@ -35,14 +36,16 @@ type CustomHeaderRightParamList = {
 };
 
 function CustomHeaderRight(): React.JSX.Element {
-    const { isDarkMode, toggleTheme } = useThemeStore()
+    const { isDarkMode, toggleTheme } = useAuthStore()
     const navigation = useNavigation<StackNavigationProp<CustomHeaderRightParamList>>()
+    
+
     return (
         <View style={{ flexDirection: "row", padding: 10, gap: 20 }}>
 
-            <Pressable hitSlop={{ top: 30, right: 30, left: 30, bottom: 30 }} onPress={() => navigation.navigate("Search")}> <Ionicons name={"search"} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} size={25} /> </Pressable>
+            <Pressable hitSlop={{ top: 30, right: 30, left: 30, bottom: 30 }} onPress={() => navigate("Search")}> <Ionicons name={"search"} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} size={25} /> </Pressable>
 
-            <Pressable hitSlop={{ top: 30, right: 30, left: 10, bottom: 30 }} onPress={() => navigation.navigate("Notifications")} > <FontAwesome name={"bell-o"} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} size={25} /> </Pressable>
+            <Pressable hitSlop={{ top: 30, right: 30, left: 10, bottom: 30 }} onPress={() => navigate("Notifications")} > <FontAwesome name={"bell-o"} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} size={25} /> </Pressable>
 
             <Pressable hitSlop={{ top: 30, right: 30, left: 10, bottom: 30 }} onPress={() => toggleTheme()}> <Ionicons name={isDarkMode === "dark" ? "moon-outline" : "sunny-outline"} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} size={25} /> </Pressable>
 

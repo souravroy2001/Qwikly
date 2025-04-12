@@ -1,18 +1,19 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import MyStack from './MyStack';
-import Profile from 'screens/Profile';
+import Profile from 'screens/Account';
 import CustomDrawerContent from './CustomDrawerContent';
 import Settings from 'screens/Settings';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomHeader from './CustomHeader';
-import useThemeStore from 'zustand/themeState';
+import useAuthStore from 'zustand/authStore';
+import Account from 'screens/Account';
 
 
 const Drawer = createDrawerNavigator();
 
 function MyDrawer() {
-    const { isDarkMode } = useThemeStore()
+    const { isDarkMode } = useAuthStore()
     return (
         <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />} screenOptions={{
             drawerActiveBackgroundColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
@@ -35,7 +36,7 @@ function MyDrawer() {
                     <Ionicons name={focused ? "home" : "home-outline"} color={color} size={size} />
                 )
             }} />
-            <Drawer.Screen name="Profile" component={Profile}
+            <Drawer.Screen name="Account" component={Account}
                 options={{
                     ...CustomHeader,
                     drawerIcon: ({ focused, color, size }) => (
@@ -47,7 +48,8 @@ function MyDrawer() {
                 ...CustomHeader,
                 drawerIcon: ({ focused, color, size }) => (
                     <Ionicons name={focused ? "settings" : "settings-outline"} size={size} color={color} />
-                )
+                ),
+                headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
             }} />
         </Drawer.Navigator>
     );

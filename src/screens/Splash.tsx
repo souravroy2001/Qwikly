@@ -1,11 +1,9 @@
-import { View, Text, StatusBar, useColorScheme, ImageBackground, StyleSheet, Image, Pressable } from 'react-native'
+import { View, Text, StatusBar, ImageBackground, StyleSheet, Image, Pressable } from 'react-native'
 import React from 'react'
+import useAuthStore from 'zustand/authStore';
 
-type SplashProps = {
-  onDone: () => void;
-};
 
-export default function Splash({ onDone }: SplashProps): React.JSX.Element {
+export default function Splash(): React.JSX.Element {
 
   return (
     <ImageBackground source={require("../components/images/Splash-screen-image.jpeg")} resizeMode='cover' style={styles.background}>
@@ -17,7 +15,7 @@ export default function Splash({ onDone }: SplashProps): React.JSX.Element {
 
         <Text style={styles.title}>Speed Meets Simplicity — <Text style={{ fontSize: 25 }}>Shop Smarter with Qwikly!</Text></Text>
 
-        <Pressable onPress={onDone} style={({ pressed }) => [styles.actionBtn, { backgroundColor: pressed ? "#124245" : "#f1eae2" }]}>
+        <Pressable onPress={() => useAuthStore.getState().toggleShowSplash()} style={({ pressed }) => [styles.actionBtn, { backgroundColor: pressed ? "#124245" : "#f1eae2" }]}>
           {({ pressed }) => (
             <Text style={[styles.actionBtnText, { color: pressed ? "#f1eae2" : "#124245" }]}> Let's Qwikly! </Text>
           )}

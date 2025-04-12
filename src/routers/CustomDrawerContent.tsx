@@ -1,14 +1,18 @@
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
-import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import useThemeStore from "zustand/themeState";
+import useAuthStore from "zustand/authStore";
+import { closeDrawer } from "./NavigationService";
 
 function CustomDrawerContent(props: DrawerContentComponentProps): React.JSX.Element {
-    const navigation = useNavigation()
-    const { isDarkMode } = useThemeStore()
     const [showOverlay, setShowOverlay] = useState(false);
+    const { user, isDarkMode } = useAuthStore()
+
+    const profileImageSource =
+        user?.photoURL && user.photoURL.trim().startsWith('http')
+            ? { uri: user.photoURL }
+            : require('../components/images/avatar.gif');
 
     return (
         <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2", flex: 1 }}>
@@ -21,15 +25,15 @@ function CustomDrawerContent(props: DrawerContentComponentProps): React.JSX.Elem
                 top: 10,
                 zIndex: 1
             }}>
-                <Pressable hitSlop={{ top: 10, bottom: 10, right: 10, left: 10 }} onPress={() => navigation.dispatch(DrawerActions.closeDrawer())}>
+                {/* navigation.dispatch(DrawerActions.openDrawer() */}
+                <Pressable hitSlop={{ top: 10, bottom: 10, right: 10, left: 10 }} onPress={() => closeDrawer()}>
                     <Ionicons name="close" size={24} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} />
                 </Pressable>
             </View>
 
             <View style={styles.profileSection}>
                 <Pressable onPress={() => setShowOverlay((prev) => !prev)}>
-                    <Image source={{ uri: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D" }} style={styles.profileImage} />
-
+                    <Image source={profileImageSource} style={[styles.profileImage, { backgroundColor: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]} />
 
                     {
                         showOverlay && (
@@ -42,8 +46,8 @@ function CustomDrawerContent(props: DrawerContentComponentProps): React.JSX.Elem
 
                 </Pressable>
                 <View>
-                    <Text style={[styles.profileFullName, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}> Sourav Roy </Text>
-                    <Text style={[styles.profileUSerName, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>@sourav</Text>
+                    <Text style={[styles.profileFullName, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}> {user?.name} </Text>
+                    <Text style={[styles.profileUSerName, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>{user?.userName}</Text>
                 </View>
             </View>
             <View style={styles.drawerItems}>
@@ -51,7 +55,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps): React.JSX.Elem
             </View>
 
             <View style={[styles.footer, { borderColor: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>
-                <Pressable style={styles.logoutBtn} onPress={() => console.log('Logging out')}>
+                <Pressable style={styles.logoutBtn} onPress={() => useAuthStore.getState().logout()}>
                     <Ionicons name={"exit-outline"} size={25} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} />
                     <Text style={[styles.logout, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>Logout</Text>
                 </Pressable>
@@ -76,6 +80,7 @@ const styles = StyleSheet.create({
         width: 70,
         height: 70,
         borderRadius: 35,
+        borderWidth: 1,
     },
     profileOverlay: {
         position: "absolute",
