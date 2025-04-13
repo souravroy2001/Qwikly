@@ -17,7 +17,6 @@ export default function Login() {
   const [user, setUser] = useState<logData>({});
   const [isPasswordShow, setIsPasswordShow] = useState<boolean>(false);
   const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex: RegExp = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
 
 
   function handleLogin() {

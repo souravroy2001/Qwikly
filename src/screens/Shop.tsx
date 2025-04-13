@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ProductsTypes } from 'interface/productTypes';
 import ProductComponent from 'components/ProductComponent';
 import useAuthStore from 'zustand/authStore';
+import { navigate } from 'routers/NavigationService';
 
 type RootStackParamList = {
   ProductDetail: { productId: number };
@@ -19,7 +20,7 @@ export default function Shop() {
   const { isDarkMode } = useAuthStore()
 
   const handlePress = (product: ProductsTypes) => {
-    navigation.navigate('ProductDetail', { productId: product.id });
+    navigate('ProductDetails', { productId: product });
   };
 
   if (loading) {

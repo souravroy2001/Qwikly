@@ -9,14 +9,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import AuthNavigator from 'routers/AuthNavigator';
 import MyDrawer from 'routers/MyDrawer';
-import { navigate, navigationRef } from 'routers/NavigationService';
+import { navigationRef } from 'routers/NavigationService';
 import Splash from 'screens/Splash';
 import useAuthStore from 'zustand/authStore';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Notifications from 'screens/Notifications';
 import Search from 'screens/Search';
-import { Pressable, StyleSheet } from 'react-native';
-import AntDesign from "react-native-vector-icons/AntDesign"
+import { StyleSheet } from 'react-native';
+import Cart from 'screens/Cart';
+import Favorites from 'screens/Favorites';
 
 
 
@@ -54,6 +55,22 @@ function App(): React.JSX.Element {
                     })} />
                     <RootStack.Screen name='Notifications' component={Notifications} options={() => ({
                         title: "Notifications",
+                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                        headerTitleStyle: {
+                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                        },
+                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                    })} />
+                    <RootStack.Screen name='Cart' component={Cart} options={() => ({
+                            title: "Cart",
+                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                        headerTitleStyle: {
+                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                        },
+                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                    })} />
+                    <RootStack.Screen name='Favorites' component={Favorites} options={() => ({
+                            title: "Favorites",
                         headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
                         headerTitleStyle: {
                             color: isDarkMode === "dark" ? "#f1eae2" : "#124245"

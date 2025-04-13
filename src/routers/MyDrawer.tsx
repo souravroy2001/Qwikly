@@ -8,6 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import CustomHeader from './CustomHeader';
 import useAuthStore from 'zustand/authStore';
 import Account from 'screens/Account';
+import Notifications from 'screens/Notifications';
 
 
 const Drawer = createDrawerNavigator();
@@ -44,6 +45,13 @@ function MyDrawer() {
                     ),
                     headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" }
                 }} />
+            <Drawer.Screen name="Notifications" component={Notifications} options={{
+                ...CustomHeader,
+                drawerIcon: ({ focused, color, size }) => (
+                    <Ionicons name={focused ? "notifications-sharp" : "notifications-outline"} size={size} color={color} />
+                ),
+                headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+            }} />
             <Drawer.Screen name="Settings" component={Settings} options={{
                 ...CustomHeader,
                 drawerIcon: ({ focused, color, size }) => (

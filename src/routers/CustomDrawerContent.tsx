@@ -9,11 +9,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps): React.JSX.Elem
     const [showOverlay, setShowOverlay] = useState(false);
     const { user, isDarkMode } = useAuthStore()
 
-    const profileImageSource =
-        user?.photoURL && user.photoURL.trim().startsWith('http')
-            ? { uri: user.photoURL }
-            : require('../components/images/avatar.gif');
-
     return (
         <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2", flex: 1 }}>
             <View style={{
@@ -25,7 +20,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps): React.JSX.Elem
                 top: 10,
                 zIndex: 1
             }}>
-                {/* navigation.dispatch(DrawerActions.openDrawer() */}
+
                 <Pressable hitSlop={{ top: 10, bottom: 10, right: 10, left: 10 }} onPress={() => closeDrawer()}>
                     <Ionicons name="close" size={24} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} />
                 </Pressable>
@@ -33,7 +28,10 @@ function CustomDrawerContent(props: DrawerContentComponentProps): React.JSX.Elem
 
             <View style={styles.profileSection}>
                 <Pressable onPress={() => setShowOverlay((prev) => !prev)}>
-                    <Image source={profileImageSource} style={[styles.profileImage, { backgroundColor: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]} />
+                    <Image source={{
+                        uri: user?.photoURL
+                            || 'https://www.w3schools.com/w3images/avatar2.png',
+                    }} style={[styles.profileImage, { backgroundColor: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]} />
 
                     {
                         showOverlay && (

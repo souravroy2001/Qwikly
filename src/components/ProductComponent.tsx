@@ -4,23 +4,16 @@ import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View } fr
 import { Products } from "interface/interface";
 import Entypo from "react-native-vector-icons/Entypo";
 import useAuthStore from "zustand/authStore";
-// import Ionicons from "react-native-vector-icons/Ionicons"
+import Checkout from "screens/Checkout";
+import { navigate } from "routers/NavigationService";
 
 const ProductComponent = memo(({ product, onPress }: ProductComponentProps) => {
     const { isDarkMode } = useAuthStore()
     const [isImageLoaded, setIsImageLoaded] = useState(false);
-    const [favorites, setFavorites] = useState<ProductsTypes[]>([]);
+    const { favorites } = useAuthStore()
 
     function handleFavorite(product: ProductsTypes) {
-        const isFavorite = favorites.some((item) => item.id === product.id);
-
-        if (isFavorite) {
-            setFavorites(prev => prev.filter(item => item.id !== product.id));
-            Alert.alert("Removed from favorites");
-        } else {
-            setFavorites(prev => [...prev, product]);
-            Alert.alert("Added to favorites");
-        }
+        useAuthStore.getState().handleFavorite(product)
     }
 
     useEffect(() => {
@@ -32,18 +25,11 @@ const ProductComponent = memo(({ product, onPress }: ProductComponentProps) => {
     }, [product?.imageUrl]);
 
 
-    function handleActionBtn(product: Products): void {
-        console.log(product);
-    }
+    function handleCartBtn(product: ProductsTypes): void {
 
-    function handleCartBtn(product: Products): void {
-        console.log(product)
-    }
+        useAuthStore.getState().handleCart(product)
 
-    function handleRemoveBtn(id: number): void {
-        console.log(id)
     }
-
 
     const isFavorite = favorites.some((item) => item.id === product.id);
 
@@ -72,10 +58,10 @@ const ProductComponent = memo(({ product, onPress }: ProductComponentProps) => {
                 <Text style={[styles.discount, { color: isDarkMode === "dark" ? "#f47679" : "#F00" }]}>{product?.discount}% OFF</Text>
             </View>
             <View style={styles.productAction}>
-                <Pressable style={styles.actionBtn}>
+                <Pressable style={styles.actionBtn} onPress={() => handleCartBtn(product)}>
                     <Text style={styles.btnText}>Add to cart</Text>
                 </Pressable>
-                <Pressable style={[styles.actionBtn, { backgroundColor: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>
+                <Pressable onPress={() => navigate('Checkout', { items: product })} style={[styles.actionBtn, { backgroundColor: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>
                     <Text style={[styles.btnText, { color: isDarkMode === "dark" ? "#124245" : "#f1eae2" }]}>Buy now</Text>
                 </Pressable>
             </View>

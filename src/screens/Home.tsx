@@ -11,36 +11,46 @@ const { width } = Dimensions.get('window');
 export default function Home() {
   const { data, loading, error } = useFetch<ProductsTypes[]>("https://backend.ecom.subraatakumar.com/api/v1/allproducts");
 
-  const { isDarkMode } = useAuthStore()
+  const { isDarkMode } = useAuthStore();
+
+  const themeStyles = {
+    backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2",
+    color: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+  };
 
   const specialOffer = useMemo(() => data?.slice(0, 12) || [], [data]);
   const categories = useMemo(() => data?.slice(0, 10) || [], [data]);
   const featuredProducts = useMemo(() => data?.slice(15, 45) || [], [data]);
 
   const handlePress = (product: ProductsTypes) => {
-    console.log("Product Clicked:", product?.name);
+    navigate('ProductDetails', { productId: product });
   };
 
-  const renderSectionItem = useMemo(() =>
-    ({ item }) => (
-      <View style={styles.sectionItem}>
-        <Text style={styles.sectionTitle}>{item?.category}</Text>
-      </View>
-    ),
-    []
-  );
+  const RenderSectionItem = ({ item }: { item: ProductsTypes }) => (
+    <View style={styles.sectionItem}>
+      <Text style={styles.sectionTitle}>{item?.category}</Text>
+    </View>
+  )
+
+  if (loading) {
+    return <Text style={styles.loading}>Loading products...</Text>;
+  }
+
+  if (error) {
+    return <Text style={styles.error}>Error: {error}</Text>;
+  }
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" }]}>
-      <StatusBar backgroundColor={isDarkMode === "dark" ? "#124245" : "#f1eae2"} barStyle={isDarkMode === "dark" ? "light-content" : "dark-content"} />
+    <ScrollView style={[styles.container, { backgroundColor: themeStyles.backgroundColor }]}>
+      <StatusBar backgroundColor={themeStyles.backgroundColor} barStyle={isDarkMode === "dark" ? "light-content" : "dark-content"} />
 
 
       <View style={styles.sectionContainer}>
 
         <View style={styles.sectionHeaderBox}>
-          <Text style={[styles.sectionHeader, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>Special offer</Text>
+          <Text style={[styles.sectionHeader, { color: themeStyles.color }]}>Special offer</Text>
           <Pressable hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }} onPress={() => navigate("Shop")}>
-            <Text style={[styles.SpecialOfferVew, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>View all</Text>
+            <Text style={[styles.SpecialOfferVew, { color: themeStyles.color }]}>View all</Text>
           </Pressable>
         </View>
 
@@ -55,23 +65,23 @@ export default function Home() {
           windowSize={5}
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.contentContainer}
-          ListEmptyComponent={() => <Text style={[styles.emptyMessage, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>No items in the cart</Text>}
+          ListEmptyComponent={() => <Text style={[styles.emptyMessage, { color: themeStyles.color }]}>No items in the cart</Text>}
         />
       </View>
 
       <View style={styles.sectionContainer}>
 
         <View style={styles.sectionHeaderBox}>
-          <Text style={[styles.sectionHeader, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>Categories</Text>
+          <Text style={[styles.sectionHeader, { color: themeStyles.color }]}>Categories</Text>
           <Pressable hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }} onPress={() => navigate("Shop")}>
-            <Text style={[styles.SpecialOfferVew, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>View all</Text>
+            <Text style={[styles.SpecialOfferVew, { color: themeStyles.color }]}>View all</Text>
           </Pressable>
         </View>
 
         <FlatList
           horizontal
           data={categories}
-          renderItem={renderSectionItem}
+          renderItem={({ item }) => <RenderSectionItem item={item} />}
           keyExtractor={(item) => item.id.toString()}
           showsHorizontalScrollIndicator={false}
           windowSize={5}
@@ -82,9 +92,9 @@ export default function Home() {
       <View style={styles.sectionContainer}>
 
         <View style={styles.sectionHeaderBox}>
-          <Text style={[styles.sectionHeader, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>Featured Products</Text>
+          <Text style={[styles.sectionHeader, { color: themeStyles.color }]}>Featured Products</Text>
           <Pressable hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }} onPress={() => navigate("Shop")}>
-            <Text style={[styles.SpecialOfferVew, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>View all</Text>
+            <Text style={[styles.SpecialOfferVew, { color: themeStyles.color }]}>View all</Text>
           </Pressable>
         </View>
 
@@ -99,7 +109,7 @@ export default function Home() {
           windowSize={5}
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.contentContainer}
-          ListEmptyComponent={() => <Text style={[styles.emptyMessage, { color: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>No items in the cart</Text>}
+          ListEmptyComponent={() => <Text style={[styles.emptyMessage, { color: themeStyles.color }]}>No items in the cart</Text>}
         />
       </View>
     </ScrollView>
@@ -178,5 +188,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     fontSize: 25,
+  },
+  loading: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16
+  },
+  error: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: 'red',
+    fontSize: 16
   },
 });

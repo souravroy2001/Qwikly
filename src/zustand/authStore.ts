@@ -4,10 +4,16 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import {Alert} from 'react-native';
+import {ProductsTypes} from 'interface/productTypes';
 
 type Notification = {
   title: string;
   description: string;
+  id?: number;
+  read?: boolean;
+  icon: string;
+  timestamp?: number;
+  timeAgo?: string;
 };
 
 type UserData = {
@@ -17,7 +23,9 @@ type UserData = {
   userName: string;
   createdAt: number;
   photoURL: string;
-  notification: Notification[];
+  notifications: Notification[];
+  favorites: ProductsTypes[];
+  cart: ProductsTypes[];
 };
 type ThemeMode = 'light' | 'dark';
 
@@ -26,6 +34,9 @@ type AuthState = {
   user: UserData | null;
   showSplash: boolean;
   isDarkMode: ThemeMode;
+  favorites: ProductsTypes[];
+  cartItems: ProductsTypes[];
+  notifications: Notification[];
   toggleTheme: (defaultMode?: ThemeMode) => void;
   register: (data: {
     email: string;
@@ -37,15 +48,42 @@ type AuthState = {
   logout: () => Promise<void>;
   toggleShowSplash: () => void;
   updateProfile: (data: {url: string}) => void;
+  handleFavorite: (product: ProductsTypes) => void;
+  handleCart: (product: ProductsTypes) => void;
+  cartItemDecreaseQuantity: (product: ProductsTypes) => void;
+  cartItemRemove: (product: ProductsTypes) => void;
+  handleNotification: (notification: Notification) => void;
 };
 
 const useAuthStore = create<AuthState>()(
   persist(
-    set => ({
+    (set, get) => ({
       isLogin: false,
       user: null,
       showSplash: true,
       isDarkMode: 'dark',
+      favorites: [],
+      cartItems: [],
+      notifications: [],
+
+      syncUserData: async () => {
+        const user = auth().currentUser;
+        if (!user) return;
+
+        const snapshot = await database()
+          .ref(`/users/${user.uid}`)
+          .once('value');
+        const data = snapshot.val();
+
+        if (data) {
+          set({
+            user: data,
+            favorites: data.favorites || [],
+            cartItems: data.cart || [],
+            notifications: data.notifications || [],
+          });
+        }
+      },
       toggleTheme: (defaultMode?: ThemeMode): void =>
         set(state => ({
           isDarkMode: defaultMode
@@ -59,6 +97,239 @@ const useAuthStore = create<AuthState>()(
           showSplash: false,
         }));
       },
+
+      handleNotification: notification => {
+        const user = auth().currentUser;
+
+        if (!user) {
+          Alert.alert('No Active Session', 'Please log in to continue.');
+          return;
+        }
+
+        const newNotification: Notification = {
+          id: Date.now(),
+          title: notification.title,
+          description: notification.description,
+          icon: notification.icon || '',
+          read: false,
+          timestamp: Date.now(),
+        };
+
+        const updatedNotifications = [...get().notifications, newNotification];
+
+        database()
+          .ref(`users/${user.uid}/notifications`)
+          .set(updatedNotifications);
+
+        set({notifications: updatedNotifications});
+      },
+
+      markNotificationAsRead: async (id: number) => {
+        set(state => {
+          const updated = state.notifications.map(n =>
+            n.id === id ? {...n, read: true} : n,
+          );
+
+          const user = auth().currentUser;
+          if (user) {
+            database().ref(`users/${user.uid}/notifications`).set(updated);
+          }
+
+          return {notifications: updated};
+        });
+      },
+
+      clearAllNotifications: async () => {
+        set(() => {
+          const user = auth().currentUser;
+          if (user) {
+            database().ref(`users/${user.uid}/notifications`).set([]);
+          }
+
+          return {notifications: []};
+        });
+      },
+
+      handleFavorite: async product => {
+        set(state => {
+          try {
+            const user = auth().currentUser;
+
+            if (!user) {
+              Alert.alert('No Active Session', 'Please log in to continue.');
+              return state;
+            }
+
+            const isFavorite = state.favorites.some(
+              item => item.id === product.id,
+            );
+
+            const updatedFavorites = isFavorite
+              ? state.favorites.filter(item => item.id !== product.id)
+              : [...state.favorites, product];
+
+            const updatedState = {
+              favorites: updatedFavorites,
+            };
+
+            get().handleNotification({
+              title: isFavorite
+                ? 'Removed from Favorites'
+                : 'Added to Favorites',
+              description: `Product "${product.name}" was ${
+                isFavorite ? 'removed from' : 'added to'
+              } your favorites.`,
+              icon: 'heart',
+            });
+
+            database().ref(`users/${user.uid}/favorites`).set(updatedFavorites);
+
+            Alert.alert(
+              isFavorite ? 'Removed from favorites' : 'Added to favorites',
+              isFavorite
+                ? 'The product has been removed from your favorites.'
+                : 'The product has been successfully added to your favorites.',
+            );
+
+            return updatedState;
+          } catch (error: any) {
+            Alert.alert(
+              'Update Failed',
+              error.message ||
+                'We couldn’t update your favorites. Please try again.',
+            );
+            return state;
+          }
+        });
+      },
+
+      handleCart: async product => {
+        const user = auth().currentUser;
+
+        if (!user) {
+          Alert.alert('No Active Session', 'Please log in to continue.');
+          return;
+        }
+
+        const state = get();
+        const existingProduct = state.cartItems.find(
+          item => item.id === product.id,
+        );
+
+        let updatedCart;
+        let notification;
+
+        if (!existingProduct) {
+          updatedCart = [...state.cartItems, {...product, quantity: 1}];
+          notification = {
+            title: 'Added to Cart',
+            description: `Product "${product.name}" has been added to your cart.`,
+            icon: 'shopping-cart',
+          };
+        } else {
+          updatedCart = state.cartItems.map(item =>
+            item.id === product.id
+              ? {...item, quantity: item.quantity + 1}
+              : item,
+          );
+          notification = {
+            title: 'Cart Updated',
+            description: `Increased quantity of "${product.name}" in your cart.`,
+            icon: 'shopping-cart',
+          };
+        }
+
+        await database().ref(`users/${user.uid}/cart`).set(updatedCart);
+
+        set({cartItems: updatedCart});
+
+        get().handleNotification(notification);
+
+        Alert.alert(notification.title, notification.description);
+      },
+
+      cartItemDecreaseQuantity: async product => {
+        set(state => {
+          try {
+            const user = auth().currentUser;
+
+            if (!user) {
+              Alert.alert('No Active Session', 'Please log in to continue.');
+              return state;
+            }
+
+            const existingProduct = state.cartItems.find(
+              item => item.id === product.id,
+            );
+
+            if (!existingProduct) {
+              Alert.alert(
+                'Item Not Found',
+                'This product is not in your cart.',
+              );
+              return state;
+            }
+
+            let updatedCart;
+
+            if (existingProduct.quantity <= 1) {
+              updatedCart = state.cartItems.filter(
+                item => item.id !== product.id,
+              );
+            } else {
+              updatedCart = state.cartItems.map(item =>
+                item.id === product.id
+                  ? {...item, quantity: item.quantity - 1}
+                  : item,
+              );
+            }
+
+            const updatedState = {cartItems: updatedCart};
+
+            database().ref(`users/${user.uid}/cart`).set(updatedCart);
+
+            return updatedState;
+          } catch (error: any) {
+            Alert.alert(
+              'Update Failed',
+              error.message || 'Could not update your cart. Please try again.',
+            );
+            return state;
+          }
+        });
+      },
+
+      cartItemRemove: async product => {
+        set(state => {
+          try {
+            const user = auth().currentUser;
+
+            if (!user) {
+              Alert.alert('No Active Session', 'Please log in to continue.');
+              return state;
+            }
+
+            const updatedCart = state.cartItems.filter(
+              item => item.id !== product.id,
+            );
+
+            const updatedState = {cartItems: updatedCart};
+
+            database().ref(`users/${user.uid}/cart`).set(updatedCart);
+
+            Alert.alert('Item Removed', 'Product removed from your cart.');
+
+            return updatedState;
+          } catch (error: any) {
+            Alert.alert(
+              'Removal Failed',
+              error.message || 'Could not remove item. Please try again.',
+            );
+            return state;
+          }
+        });
+      },
+
       updateProfile: async ({url}) => {
         try {
           const user = auth().currentUser;
@@ -91,6 +362,7 @@ const useAuthStore = create<AuthState>()(
           );
         }
       },
+
       register: async ({email, password, name, userName}) => {
         try {
           const userCredential = await auth().createUserWithEmailAndPassword(
@@ -110,13 +382,21 @@ const useAuthStore = create<AuthState>()(
             name,
             userName,
             photoURL: '',
-            notification: [],
+            notifications: [],
+            favorites: [],
+            cart: [],
             createdAt: Date.now(),
           };
 
           await database().ref(`/users/${uid}`).set(userData);
 
           set({user: userData, isLogin: true, showSplash: false});
+
+          get().handleNotification({
+            title: 'Welcome to the App 🎉',
+            description: `Hello ${name}, your account was created successfully.`,
+            icon: 'user-plus',
+          });
 
           Alert.alert(
             '🎉 Registration Successful',
@@ -156,6 +436,13 @@ const useAuthStore = create<AuthState>()(
 
           if (userData) {
             set({user: userData, isLogin: true, showSplash: false});
+
+            get().handleNotification({
+              title: 'Welcome Back 🎉',
+              description: `Glad to see you again, ${userData.name}!`,
+              icon: 'login',
+            });
+
             Alert.alert(
               '🎉 Welcome Back',
               `Glad to see you again, ${userData.name}!`,
@@ -192,6 +479,13 @@ const useAuthStore = create<AuthState>()(
         try {
           await auth().signOut();
           set({user: null, isLogin: false, showSplash: true});
+
+          get().handleNotification({
+            title: 'Goodbye 👋',
+            description: 'You have successfully logged out.',
+            icon: 'logout',
+          });
+
           Alert.alert(
             '👋 Logged Out',
             'You have been successfully logged out.',
