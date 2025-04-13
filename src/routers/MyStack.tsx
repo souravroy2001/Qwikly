@@ -12,6 +12,7 @@ import Cart from 'screens/Cart';
 import Favorites from 'screens/Favorites';
 import ProductDetails from 'screens/ProductDetails';
 import Checkout from 'screens/Checkout';
+import OrderSuccess from 'screens/OrderSuccess';
 
 
 const Stack = createStackNavigator();
@@ -75,6 +76,16 @@ const MyStack: React.FC = () => {
             })} />
             <Stack.Screen name='Checkout' component={Checkout} options={() => ({
                 title: "Checkout",
+                headerLeft: () => (
+                    <Pressable style={styles.backBtn} hitSlop={{ top: 30, right: 100, left: 100, bottom: 30 }} onPress={() => navigate("Main")}> <AntDesign name="arrowleft" size={30} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} /> </Pressable>
+                ),
+                headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                headerTitleStyle: {
+                    color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                }
+            })} />
+            <Stack.Screen name='OrderSuccess' component={OrderSuccess} options={() => ({
+                title: "OrderSuccess",
                 headerLeft: () => (
                     <Pressable style={styles.backBtn} hitSlop={{ top: 30, right: 100, left: 100, bottom: 30 }} onPress={() => navigate("Main")}> <AntDesign name="arrowleft" size={30} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} /> </Pressable>
                 ),

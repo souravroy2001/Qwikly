@@ -16,6 +16,14 @@ type Notification = {
   timeAgo?: string;
 };
 
+type OrderType = {
+  orderId: string;
+  total: number;
+  items: ProductsTypes[];
+  createdAt?: string;
+  status?: string;
+};
+
 type UserData = {
   uid: string;
   email: string;
@@ -37,6 +45,7 @@ type AuthState = {
   favorites: ProductsTypes[];
   cartItems: ProductsTypes[];
   notifications: Notification[];
+  orders: OrderType[];
   toggleTheme: (defaultMode?: ThemeMode) => void;
   register: (data: {
     email: string;
@@ -51,8 +60,13 @@ type AuthState = {
   handleFavorite: (product: ProductsTypes) => void;
   handleCart: (product: ProductsTypes) => void;
   cartItemDecreaseQuantity: (product: ProductsTypes) => void;
-  cartItemRemove: (product: ProductsTypes) => void;
+  cartItemRemove: (product?: ProductsTypes) => void;
   handleNotification: (notification: Notification) => void;
+  createOrder: (data: {
+    orderId: string;
+    total: number;
+    items: ProductsTypes[];
+  }) => void;
 };
 
 const useAuthStore = create<AuthState>()(
@@ -65,6 +79,7 @@ const useAuthStore = create<AuthState>()(
       favorites: [],
       cartItems: [],
       notifications: [],
+      orders: [],
 
       syncUserData: async () => {
         const user = auth().currentUser;
@@ -81,6 +96,7 @@ const useAuthStore = create<AuthState>()(
             favorites: data.favorites || [],
             cartItems: data.cart || [],
             notifications: data.notifications || [],
+            orders: data.orders || [],
           });
         }
       },
@@ -299,7 +315,7 @@ const useAuthStore = create<AuthState>()(
         });
       },
 
-      cartItemRemove: async product => {
+      cartItemRemove: async (product?: ProductsTypes) => {
         set(state => {
           try {
             const user = auth().currentUser;
@@ -309,9 +325,13 @@ const useAuthStore = create<AuthState>()(
               return state;
             }
 
-            const updatedCart = state.cartItems.filter(
-              item => item.id !== product.id,
-            );
+            let updatedCart: ProductsTypes[] = [];
+
+            if (product) {
+              updatedCart = state.cartItems.filter(
+                item => item.id !== product.id,
+              );
+            }
 
             const updatedState = {cartItems: updatedCart};
 
@@ -328,6 +348,53 @@ const useAuthStore = create<AuthState>()(
             return state;
           }
         });
+      },
+
+      createOrder: async ({orderId, total, items}: OrderType) => {
+        try {
+          const user = auth().currentUser;
+
+          if (!user) {
+            Alert.alert('No Active Session', 'Please log in to continue.');
+            return;
+          }
+
+          const orderData = {
+            orderId,
+            total,
+            items,
+            createdAt: new Date().toISOString(),
+            status: 'processing',
+          };
+
+          const userOrdersRef = database().ref(`users/${user.uid}/orders`);
+
+          const snapshot = await userOrdersRef.once('value');
+          const existingOrders = snapshot.val() || {};
+
+          existingOrders[orderId] = orderData;
+
+          await userOrdersRef.set(existingOrders);
+
+          set(state => {
+            const updatedOrders = [...state.orders, orderData];
+            return {orders: updatedOrders};
+          });
+
+          Alert.alert(
+            'Order Placed',
+            `Your order (${orderId}) has been successfully placed!`,
+          );
+
+          const notification = {
+            title: 'Order Placed',
+            description: `Order #${orderId} has been placed successfully.`,
+            icon: 'shopping-bag',
+          };
+          get().handleNotification(notification);
+        } catch (error: any) {
+          Alert.alert('Order Failed', error.message || 'Something went wrong.');
+        }
       },
 
       updateProfile: async ({url}) => {

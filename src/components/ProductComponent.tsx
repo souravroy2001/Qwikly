@@ -61,9 +61,6 @@ const ProductComponent = memo(({ product, onPress }: ProductComponentProps) => {
                 <Pressable style={styles.actionBtn} onPress={() => handleCartBtn(product)}>
                     <Text style={styles.btnText}>Add to cart</Text>
                 </Pressable>
-                <Pressable onPress={() => navigate('Checkout', { items: product })} style={[styles.actionBtn, { backgroundColor: isDarkMode === "dark" ? "#f1eae2" : "#124245" }]}>
-                    <Text style={[styles.btnText, { color: isDarkMode === "dark" ? "#124245" : "#f1eae2" }]}>Buy now</Text>
-                </Pressable>
             </View>
         </Pressable>
     );
@@ -124,8 +121,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     productAction: {
-        flexDirection: "row",
-        justifyContent: "space-between",
         marginTop: 10,
         paddingHorizontal: 5,
     },
@@ -139,7 +134,8 @@ const styles = StyleSheet.create({
     btnText: {
         fontSize: 16,
         fontWeight: 600,
-        color: "#FFF"
+        color: "#FFF",
+        textAlign: "center"
     },
     footer: {
         marginTop: 70,

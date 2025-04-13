@@ -10,7 +10,8 @@ import {
   TextInput,
   SafeAreaView,
   StatusBar,
-  Pressable
+  Pressable,
+  Modal,
 } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import useAuthStore from 'zustand/authStore';
@@ -18,6 +19,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { navigate } from 'routers/NavigationService';
+
 type ProductType = {
   id: number;
   name: string;
@@ -36,10 +40,13 @@ type RouteParams = {
 type PaymentMethod = 'creditCard' | 'upi' | 'cod';
 type DeliveryOption = 'standard' | 'express' | 'sameDay';
 
-const Checkout = ({ navigation }) => {
-  const { isDarkMode, user } = useAuthStore();
+const Checkout = () => {
+  const { isDarkMode, user, cartItemRemove, createOrder } = useAuthStore();
   const route = useRoute<RouteProp<RouteParams, 'Checkout'>>();
   const { items } = route.params;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [address, setAddress] = useState('Darjeeling, West Bengal, 734001');
+  const [newAddress, setNewAddress] = useState('');
 
   const [step, setStep] = useState(1);
   const [promoCode, setPromoCode] = useState('');
@@ -48,8 +55,6 @@ const Checkout = ({ navigation }) => {
   const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('standard');
   const [cartItems, setCartItems] = useState(items);
   const [loadingState, setLoadingState] = useState(false);
-
-  const progress = new Animated.Value(0);
 
   const themeStyles = {
     backgroundColor: isDarkMode === 'dark' ? '#124245' : '#f1eae2',
@@ -113,15 +118,27 @@ const Checkout = ({ navigation }) => {
 
   const handleCheckout = () => {
     setLoadingState(true);
+
+    const orderId = 'ORD-' + Math.floor(Math.random() * 1000000);
+    const total = getTotal();
+    const items = cartItems;
+
     setTimeout(() => {
       setLoadingState(false);
-      navigation.navigate('OrderConfirmation', {
-        orderId: 'ORD-' + Math.floor(Math.random() * 1000000),
-        total: getTotal(),
-        items: cartItems
+
+      createOrder({orderId, total, items});
+
+      navigate('OrderSuccess', {
+        orderId,
+        total,
+        items,
       });
+
+      cartItemRemove();
     }, 1500);
   };
+
+
 
   const renderItem = ({ item }) => (
     <View style={[styles.itemCard, { backgroundColor: themeStyles.cardBackground, borderColor: themeStyles.borderColor }]}>
@@ -301,7 +318,7 @@ const Checkout = ({ navigation }) => {
                 </Text>
                 <Pressable
                   style={[styles.continueShoppingButton, { backgroundColor: themeStyles.primaryColor }]}
-                  onPress={() => navigation.navigate('Home')}
+                  onPress={() => navigate('Main')}
                 >
                   <Text style={styles.continueShoppingText}>Continue Shopping</Text>
                 </Pressable>
@@ -328,7 +345,7 @@ const Checkout = ({ navigation }) => {
                   onPress={applyPromoCode}
                   disabled={promoCode.length === 0 || promoApplied}
                 >
-                  <Text style={[styles.promoButtonText, {color: themeStyles.textColor}]}>
+                  <Text style={[styles.promoButtonText, { color: themeStyles.backgroundColor }]}>
                     {promoApplied ? 'Applied' : 'Apply'}
                   </Text>
                 </Pressable>
@@ -350,15 +367,62 @@ const Checkout = ({ navigation }) => {
                   <Text style={[styles.addressTitle, { color: themeStyles.textColor }]}>
                     Delivery Address
                   </Text>
-                  <Pressable style={styles.changeAddressButton}>
+                  <Pressable onPress={() => setModalVisible(true)} style={styles.changeAddressButton}>
                     <Text style={[styles.changeAddressText, { color: themeStyles.primaryColor }]}>
                       Change
                     </Text>
                   </Pressable>
+
+                  {/* Address Change Modal */}
+                  <Modal visible={modalVisible} transparent animationType="slide">
+                    <View style={styles.modalWrapper}>
+                      <View style={styles.modalBox}>
+                        <Text style={styles.modalTitle}>Change Delivery Address</Text>
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Enter new address"
+                          value={newAddress}
+                          onChangeText={setNewAddress}
+                          placeholderTextColor="#999"
+                        />
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Enter new address"
+                          value={newAddress}
+                          onChangeText={setNewAddress}
+                          placeholderTextColor="#999"
+                        />
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Enter new address"
+                          value={newAddress}
+                          onChangeText={setNewAddress}
+                          placeholderTextColor="#999"
+                        />
+                        <View style={styles.modalBtns}>
+                          <Pressable
+                            style={styles.saveBtn}
+                            onPress={() => {
+                              if (newAddress.trim()) {
+                                setAddress(newAddress);
+                                setNewAddress('');
+                              }
+                              setModalVisible(false);
+                            }}
+                          >
+                            <Text style={styles.btnText}>Save</Text>
+                          </Pressable>
+                          <Pressable style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
+                            <Text style={styles.btnText}>Cancel</Text>
+                          </Pressable>
+                        </View>
+                      </View>
+                    </View>
+                  </Modal>
                 </View>
 
                 <Text style={[styles.addressName, { color: themeStyles.textColor }]}>
-                  {user?.name || 'John Doe'}
+                  {user?.name || 'No name found'}
                 </Text>
                 <Text style={[styles.addressDetails, { color: themeStyles.secondaryText }]}>
                   123 Main Street, Apartment 4B
@@ -467,12 +531,18 @@ const Checkout = ({ navigation }) => {
                 </View>
 
                 <View style={styles.saveCardRow}>
-                  <View style={[styles.checkBox, { borderColor: themeStyles.borderColor, backgroundColor: themeStyles.primaryColor }]}>
-                    <Text style={styles.checkMark}>✓</Text>
-                  </View>
-                  <Text style={[styles.saveCardText, { color: themeStyles.secondaryText }]}>
-                    Save card for future payments
-                  </Text>
+
+                  <BouncyCheckbox
+                    size={25}
+                    fillColor={themeStyles.secondaryText}
+                    unFillColor="#FFFFFF"
+                    text="Save card for future payments"
+                    textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                    onPress={(isChecked: boolean) => { console.log(isChecked) }}
+                  />
+
+
+
                 </View>
               </View>
             )}
@@ -759,6 +829,55 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  modalWrapper: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalBox: {
+    width: '85%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#333',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 14,
+    color: '#000',
+    marginBottom: 20,
+  },
+  modalBtns: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  saveBtn: {
+    backgroundColor: '#008080',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+  },
+  cancelBtn: {
+    backgroundColor: '#aaa',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+  },
+  btnText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+
   deliveryOptionsContainer: {
     marginBottom: 16,
   },

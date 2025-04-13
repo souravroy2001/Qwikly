@@ -18,6 +18,10 @@ import Search from 'screens/Search';
 import { StyleSheet } from 'react-native';
 import Cart from 'screens/Cart';
 import Favorites from 'screens/Favorites';
+import Checkout from 'screens/Checkout';
+import OrderSuccess from 'screens/OrderSuccess';
+import Shop from 'screens/Shop';
+import CustomHeader from 'routers/CustomHeader';
 
 
 
@@ -62,7 +66,7 @@ function App(): React.JSX.Element {
                         headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
                     })} />
                     <RootStack.Screen name='Cart' component={Cart} options={() => ({
-                            title: "Cart",
+                        title: "Cart",
                         headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
                         headerTitleStyle: {
                             color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
@@ -70,12 +74,33 @@ function App(): React.JSX.Element {
                         headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
                     })} />
                     <RootStack.Screen name='Favorites' component={Favorites} options={() => ({
-                            title: "Favorites",
+                        title: "Favorites",
                         headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
                         headerTitleStyle: {
                             color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
                         },
                         headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                    })} />
+                    <RootStack.Screen name='Checkout' component={Checkout} options={() => ({
+                        title: "Checkout",
+                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                        headerTitleStyle: {
+                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                        },
+                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                    })} />
+                    <RootStack.Screen name='OrderSuccess' component={OrderSuccess} options={() => ({
+                        title: "Checkout",
+                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                        headerTitleStyle: {
+                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                        },
+                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                    })} />
+                    <RootStack.Screen name='Shop' component={Shop} options={() => ({
+                        ...CustomHeader,
+                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                        headerLeft: () => false
                     })} />
 
                 </RootStack.Navigator>

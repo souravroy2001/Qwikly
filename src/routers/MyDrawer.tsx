@@ -9,6 +9,7 @@ import CustomHeader from './CustomHeader';
 import useAuthStore from 'zustand/authStore';
 import Account from 'screens/Account';
 import Notifications from 'screens/Notifications';
+import Orders from 'screens/Orders';
 
 
 const Drawer = createDrawerNavigator();
@@ -49,6 +50,13 @@ function MyDrawer() {
                 ...CustomHeader,
                 drawerIcon: ({ focused, color, size }) => (
                     <Ionicons name={focused ? "notifications-sharp" : "notifications-outline"} size={size} color={color} />
+                ),
+                headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+            }} />
+            <Drawer.Screen name="Orders" component={Orders} options={{
+                ...CustomHeader,
+                drawerIcon: ({ focused, color, size }) => (
+                    <MaterialCommunityIcons name={focused ? "cart" : "cart-check"} size={size} color={color} />
                 ),
                 headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
             }} />

@@ -25,6 +25,7 @@
     "react": "19.0.0",
     "react-hook-form": "^7.55.0",
     "react-native": "0.79.0",
+    "react-native-bouncy-checkbox": "^4.1.2",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-gesture-handler": "^2.25.0",
     "react-native-linear-gradient": "^2.8.3",
