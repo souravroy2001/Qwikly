@@ -35,12 +35,14 @@ type UserData = {
   favorites: ProductsTypes[];
   cart: ProductsTypes[];
 };
+
 type ThemeMode = 'light' | 'dark';
 
 type AuthState = {
   isLogin: boolean;
   user: UserData | null;
   showSplash: boolean;
+  photoURL: string;
   isDarkMode: ThemeMode;
   favorites: ProductsTypes[];
   cartItems: ProductsTypes[];
@@ -67,6 +69,7 @@ type AuthState = {
     total: number;
     items: ProductsTypes[];
   }) => void;
+  syncUserData : () => void;
 };
 
 const useAuthStore = create<AuthState>()(
@@ -80,6 +83,7 @@ const useAuthStore = create<AuthState>()(
       cartItems: [],
       notifications: [],
       orders: [],
+      photoURL: '',
 
       syncUserData: async () => {
         const user = auth().currentUser;
@@ -97,9 +101,11 @@ const useAuthStore = create<AuthState>()(
             cartItems: data.cart || [],
             notifications: data.notifications || [],
             orders: data.orders || [],
+            photoURL: data.photoURL || '',
           });
         }
       },
+      
       toggleTheme: (defaultMode?: ThemeMode): void =>
         set(state => ({
           isDarkMode: defaultMode

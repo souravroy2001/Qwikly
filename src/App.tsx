@@ -6,16 +6,16 @@
  */
 
 import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
+import { navigationRef } from 'routers/NavigationService';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
 import AuthNavigator from 'routers/AuthNavigator';
 import MyDrawer from 'routers/MyDrawer';
-import { navigationRef } from 'routers/NavigationService';
 import Splash from 'screens/Splash';
 import useAuthStore from 'zustand/authStore';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Notifications from 'screens/Notifications';
 import Search from 'screens/Search';
-import { StyleSheet } from 'react-native';
 import Cart from 'screens/Cart';
 import Favorites from 'screens/Favorites';
 import Checkout from 'screens/Checkout';
@@ -37,8 +37,12 @@ function App(): React.JSX.Element {
      * https://github.com/react-native-community/discussions-and-proposals/discussions/827
      */
     // const [showSplash, setShowSplash] = useState(true);
-    const { isLogin, showSplash, isDarkMode } = useAuthStore()
+    const { isLogin, showSplash, isDarkMode, syncUserData } = useAuthStore()
     const RootStack = createNativeStackNavigator();
+
+    useEffect(() => {
+        syncUserData()
+    }, [])
 
     return (
         <NavigationContainer ref={navigationRef}>

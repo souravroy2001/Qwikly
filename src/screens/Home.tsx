@@ -33,10 +33,10 @@ export default function Home() {
   const { isDarkMode } = useAuthStore();
 
   const themeStyles = {
-    backgroundColor: isDarkMode === "dark" ? "#0c2f31" : "#ffffff",
+    backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2",
     surfaceColor: isDarkMode === "dark" ? "#124245" : "#f9f9f9",
-    cardColor: isDarkMode === "dark" ? "#1a5456" : "#ffffff",
-    primaryColor: isDarkMode === "dark" ? "#4fd1d8" : "#f47679",
+    cardColor: isDarkMode === "dark" ? "#124245" : "#f1eae2",
+    primaryColor: isDarkMode === "dark" ? "#f47679" : "#f47679",
     textColor: isDarkMode === "dark" ? "#f1eae2" : "#333333",
     secondaryTextColor: isDarkMode === "dark" ? "#a9d4d6" : "#555555",
   };
