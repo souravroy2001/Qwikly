@@ -14,7 +14,7 @@ export default function Login() {
 
   const navigation = useNavigation<LoginNavigationProp>();
   const isDarkMode: boolean = useColorScheme() === "dark";
-  const [user, setUser] = useState<logData>({});
+  const [user, setUser] = useState<logData>({ email: "", password: "" });
   const [isPasswordShow, setIsPasswordShow] = useState<boolean>(false);
   const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -58,10 +58,10 @@ export default function Login() {
 
 
 
-      <CustomInput onChangeText={(text) => setUser((prev) => ({ ...prev, email: text }))} value={user?.email || ""} returnKeyLabel="Go" keyboardType="email-address" placeholder="Enter Your Email" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} inputMode="email" />
+      <CustomInput leftIcon={<Ionicons name="mail-outline" size={20} color={isDarkMode ? "#124245" : "#f1eae2"} />} onChangeText={(text) => setUser((prev) => ({ ...prev, email: text }))} value={user?.email || ""} returnKeyLabel="Go" keyboardType="email-address" placeholder="Enter Your Email" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} inputMode="email" />
 
       <View style={styles.inputWrapper}>
-        <CustomInput onChangeText={(text) => setUser((prev) => ({ ...prev, password: text }))} value={user?.password} secureTextEntry={!isPasswordShow} placeholder="Enter Your Password" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} inputMode="text" />
+        <CustomInput leftIcon={<Ionicons name="lock-closed-outline" size={20} color={isDarkMode ? "#124245" : "#f1eae2"} />} onChangeText={(text) => setUser((prev) => ({ ...prev, password: text }))} value={user?.password} secureTextEntry={!isPasswordShow} placeholder="Enter Your Password" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} inputMode="text" />
 
         <Pressable onPress={() => setIsPasswordShow((prev) => !prev)} style={styles.eyeBtn}>
 

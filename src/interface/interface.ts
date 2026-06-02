@@ -63,7 +63,7 @@ type logData = {
   password: string;
 };
 
-export {
+export type {
   Categories,
   Products,
   ProductDataInterFace,

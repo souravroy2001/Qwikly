@@ -14,10 +14,9 @@ import {
     Animated
 } from 'react-native';
 import { navigate } from 'routers/NavigationService';
-import useAuthStore from 'zustand/authStore';
+import useAuthStore, { OrderType } from 'zustand/authStore';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const { width } = Dimensions.get('window');
 
@@ -55,7 +54,7 @@ export default function Orders() {
     const [refreshing, setRefreshing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('all');
-    const [expandedOrderId, setExpandedOrderId] = useState(null);
+    const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
     const fadeAnim = useState(new Animated.Value(0))[0];
 
     const themeStyles = {
@@ -68,11 +67,9 @@ export default function Orders() {
         secondaryTextColor: isDarkMode === "dark" ? "#a9d4d6" : "#666666",
     };
 
-    const orderData = orders.length > 0 && orders;
-
     const filteredOrders = activeTab === 'all'
-        ? orderData
-        : orderData.filter(order => order.status === activeTab);
+        ? orders
+        : orders.filter(order => order.status === activeTab);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -94,20 +91,20 @@ export default function Orders() {
         }, 1500);
     };
 
-    const toggleOrderExpansion = (orderId) => {
+    const toggleOrderExpansion = (orderId: string) => {
         setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
     };
 
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const formatDate = (dateString: string) => {
+        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
-    const formatCurrency = (amount) => {
+    const formatCurrency = (amount: number) => {
         return `₹${amount.toFixed(2)}`;
     };
 
-    const renderTab = (tab, label) => {
+    const renderTab = (tab: string, label: string) => {
         const isActive = activeTab === tab;
         return (
             <Pressable
@@ -130,8 +127,8 @@ export default function Orders() {
         );
     };
 
-    const renderOrderStatusBadge = (status) => {
-        const config = STATUS_CONFIG[status] || STATUS_CONFIG.processing;
+    const renderOrderStatusBadge = (status: string) => {
+        const config = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.processing;
 
         return (
             <View style={[styles.statusBadge, { backgroundColor: config.background }]}>
@@ -143,8 +140,8 @@ export default function Orders() {
         );
     };
 
-    const renderOrderItem = ({ item: order }) => {
-        const isExpanded = expandedOrderId === order.id;
+    const renderOrderItem = ({ item: order }: { item: OrderType }) => {
+        const isExpanded = expandedOrderId === order.orderId;
 
         return (
             <Pressable
@@ -152,16 +149,16 @@ export default function Orders() {
                     styles.orderCard,
                     { backgroundColor: themeStyles.cardColor, borderColor: themeStyles.borderColor }
                 ]}
-                onPress={() => toggleOrderExpansion(order.orderID)}
+                onPress={() => toggleOrderExpansion(order.orderId)}
             >
                 <View style={styles.orderHeader}>
                     <View>
-                        <Text style={[styles.orderId, { color: themeStyles.color }]}>{order.orderID}</Text>
+                        <Text style={[styles.orderId, { color: themeStyles.color }]}>{order.orderId}</Text>
                         <Text style={[styles.orderDate, { color: themeStyles.secondaryTextColor }]}>
-                            {formatDate(order.date)}
+                            {formatDate(order.createdAt || '')}
                         </Text>
                     </View>
-                    {renderOrderStatusBadge(order.status)}
+                    {renderOrderStatusBadge(order.status || 'processing')}
                 </View>
 
                 <View style={styles.orderSummary}>
@@ -194,11 +191,11 @@ export default function Orders() {
                                 <View style={styles.itemDetails}>
                                     <Text style={[styles.itemName, { color: themeStyles.color }]}>{item.name}</Text>
                                     <Text style={[styles.itemPrice, { color: themeStyles.secondaryTextColor }]}>
-                                        {formatCurrency(item.price)} × {item.quantity}
+                                        {formatCurrency(Number(item.price))} × {item.quantity}
                                     </Text>
                                 </View>
                                 <Text style={[styles.itemTotal, { color: themeStyles.color }]}>
-                                    {formatCurrency(item.price * item.quantity)}
+                                    {formatCurrency(Number(item.price) * item.quantity)}
                                 </Text>
                             </View>
                         ))}
@@ -224,7 +221,7 @@ export default function Orders() {
                             {order.status === 'delivered' && (
                                 <Pressable
                                     style={[styles.actionButton, { backgroundColor: themeStyles.primaryColor }]}
-                                    onPress={() => navigate('WriteReview', { orderId: order.id, items: order.items })}
+                                    onPress={() => navigate('WriteReview', { orderId: order.orderId, items: order.items })}
                                 >
                                     <MaterialIcons name="rate-review" size={16} color="#fff" />
                                     <Text style={styles.actionButtonText}>Write a Review</Text>
@@ -244,7 +241,7 @@ export default function Orders() {
                             {order.status === 'processing' && (
                                 <Pressable
                                     style={[styles.outlineButton, { borderColor: themeStyles.primaryColor }]}
-                                    onPress={() => navigate('CancelOrder', { orderId: order.id })}
+                                    onPress={() => navigate('CancelOrder', { orderId: order.orderId })}
                                 >
                                     <MaterialCommunityIcons name="close-circle-outline" size={16} color={themeStyles.primaryColor} />
                                     <Text style={[styles.outlineButtonText, { color: themeStyles.primaryColor }]}>Cancel Order</Text>
@@ -253,7 +250,7 @@ export default function Orders() {
 
                             <Pressable
                                 style={[styles.outlineButton, { borderColor: themeStyles.primaryColor }]}
-                                onPress={() => navigate('OrderDetails', { orderId: order.id })}
+                                onPress={() => navigate('OrderDetails', { orderId: order.orderId })}
                             >
                                 <Text style={[styles.outlineButtonText, { color: themeStyles.primaryColor }]}>View Details</Text>
                             </Pressable>
@@ -327,7 +324,7 @@ export default function Orders() {
                 <FlatList
                     data={filteredOrders}
                     renderItem={renderOrderItem}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.orderId}
                     contentContainerStyle={styles.ordersList}
                     showsVerticalScrollIndicator={false}
                     refreshControl={

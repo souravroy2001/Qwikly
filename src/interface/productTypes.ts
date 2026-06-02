@@ -25,4 +25,4 @@ interface ProductComponentProps {
   onPress: (product: ProductsTypes) => void;
 }
 
-export {ProductsTypes, ProductComponentProps, CustomHookCall};
+export type {ProductsTypes, ProductComponentProps, CustomHookCall};

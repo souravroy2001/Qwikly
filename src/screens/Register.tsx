@@ -11,7 +11,7 @@ import useAuthStore from "zustand/authStore";
 type LoginNavigationProp = NavigationProp<{ Login: undefined }>
 
 export default function Register() {
-    const [user, setUser] = useState<logData>({});
+    const [user, setUser] = useState<logData>({ email: "", password: "", name: "" });
     const navigation = useNavigation<LoginNavigationProp>();
     const isDarkMode: boolean = useColorScheme() === "dark";
     const [isPasswordShow, setIsPasswordShow] = useState<boolean>(false);
@@ -114,12 +114,12 @@ export default function Register() {
 
             <Text style={[styles.Header, { color: isDarkMode ? "#f1eae2" : "#124245" }]}>Register</Text>
 
-            <CustomInput onChangeText={(text) => setUser((prev) => ({ ...prev, name: text }))} value={user?.name || ""} placeholder="Enter Your Name" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} />
+            <CustomInput leftIcon={<Ionicons name="person-outline" size={20} color={isDarkMode ? "#124245" : "#f1eae2"} />} onChangeText={(text) => setUser((prev) => ({ ...prev, name: text }))} value={user?.name || ""} placeholder="Enter Your Name" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} />
 
-            <CustomInput onChangeText={(text) => setUser((prev) => ({ ...prev, email: text }))} value={user?.email} returnKeyLabel="Go" keyboardType="email-address" placeholder="Enter Your Email" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} />
+            <CustomInput leftIcon={<Ionicons name="mail-outline" size={20} color={isDarkMode ? "#124245" : "#f1eae2"} />} onChangeText={(text) => setUser((prev) => ({ ...prev, email: text }))} value={user?.email} returnKeyLabel="Go" keyboardType="email-address" placeholder="Enter Your Email" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} />
 
             <View style={styles.inputWrapper}>
-                <CustomInput onChangeText={(text) => setUser((prev) => ({ ...prev, password: text }))} value={user?.password} secureTextEntry={!isPasswordShow} placeholder="Enter Your Password" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} />
+                <CustomInput leftIcon={<Ionicons name="lock-closed-outline" size={20} color={isDarkMode ? "#124245" : "#f1eae2"} />} onChangeText={(text) => setUser((prev) => ({ ...prev, password: text }))} value={user?.password} secureTextEntry={!isPasswordShow} placeholder="Enter Your Password" spellCheck={true} placeholderTextColor={isDarkMode ? "#124245" : "#f1eae2"} />
 
                 <Pressable onPress={() => setIsPasswordShow((prev) => !prev)} style={styles.eyeBtn}>
 

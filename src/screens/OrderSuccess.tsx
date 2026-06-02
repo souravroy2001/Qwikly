@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import useAuthStore from 'zustand/authStore';
-
+import { ProductsTypes } from 'interface/productTypes';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { navigate } from 'routers/NavigationService';
@@ -22,14 +22,7 @@ type OrderSuccessParams = {
   OrderConfirmation: {
     orderId: string;
     total: number;
-    items: Array<{
-      id: number;
-      name: string;
-      description: string;
-      price: number;
-      imageUrl: string;
-      quantity?: number;
-    }>;
+    items: ProductsTypes[];
   };
 };
 
@@ -91,12 +84,12 @@ const OrderSuccess = () => {
   }, []);
 
 
-  const subtotal = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+  const subtotal = items.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
   const tax = subtotal * 0.18;
   const shipping = 40;
 
 
-  const renderOrderItem = ({ item }) => (
+  const renderOrderItem = ({ item }: { item: ProductsTypes }) => (
     <View style={[styles.orderItem, { backgroundColor: themeStyles.cardBackground, borderColor: themeStyles.borderColor }]}>
       <Image
         source={{ uri: item.imageUrl }}
@@ -111,7 +104,7 @@ const OrderSuccess = () => {
         </Text>
       </View>
       <Text style={[styles.itemPrice, { color: themeStyles.primaryColor }]}>
-        ₹{(item.price * (item.quantity || 1)).toLocaleString('en-IN')}
+        ₹{(Number(item.price) * (item.quantity || 1)).toLocaleString('en-IN')}
       </Text>
     </View>
   );

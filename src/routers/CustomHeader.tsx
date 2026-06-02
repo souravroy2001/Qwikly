@@ -1,14 +1,11 @@
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
-import React from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons"
-import FontAwesome from "react-native-vector-icons/FontAwesome"
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6"
 import Entypo from "react-native-vector-icons/Entypo"
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import useAuthStore from 'zustand/authStore';
 import { navigate } from './NavigationService';
-import { Screen } from 'react-native-screens';
 
 type CustomHeaderTitlePrams = {
     Home: undefined;

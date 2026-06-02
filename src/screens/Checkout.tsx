@@ -21,19 +21,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { navigate } from 'routers/NavigationService';
-
-type ProductType = {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  quantity?: number;
-};
+import { ProductsTypes } from 'interface/productTypes';
 
 type RouteParams = {
   Checkout: {
-    items: ProductType[];
+    items: ProductsTypes[];
   };
 };
 
@@ -73,7 +65,7 @@ const Checkout = () => {
     sameDay: 150
   };
 
-  const updateQuantity = (id, change) => {
+  const updateQuantity = (id: number, change: number) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
         item.id === id
@@ -83,7 +75,7 @@ const Checkout = () => {
     );
   };
 
-  const removeItem = (id) => {
+  const removeItem = (id: number) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== id));
   };
 
@@ -97,7 +89,7 @@ const Checkout = () => {
   };
 
   const getSubtotal = () => {
-    return cartItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
+    return cartItems.reduce((total, item) => total + Number(item.price) * (item.quantity || 1), 0);
   };
 
   const getDiscount = () => {
@@ -140,7 +132,7 @@ const Checkout = () => {
 
 
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: ProductsTypes }) => (
     <View style={[styles.itemCard, { backgroundColor: themeStyles.cardBackground, borderColor: themeStyles.borderColor }]}>
       <Image source={{ uri: item.imageUrl }} style={styles.image} />
 
@@ -152,7 +144,7 @@ const Checkout = () => {
           {item.description}
         </Text>
         <Text style={[styles.itemPrice, { color: themeStyles.primaryColor }]}>
-          ₹{item.price.toLocaleString('en-IN')}
+          ₹{Number(item.price).toLocaleString('en-IN')}
         </Text>
       </View>
 
@@ -182,7 +174,7 @@ const Checkout = () => {
     </View>
   );
 
-  const renderPaymentOption = (type: PaymentMethod, title: string, icon) => (
+  const renderPaymentOption = (type: PaymentMethod, title: string, icon: React.ReactNode) => (
     <Pressable
       style={[
         styles.paymentOption,

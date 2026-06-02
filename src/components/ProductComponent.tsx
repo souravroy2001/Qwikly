@@ -1,11 +1,8 @@
 import { memo, useEffect, useState } from "react";
-import { ProductComponentProps, ProductsTypes } from "../interface/productTypes";
-import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { Products } from "interface/interface";
+import type { ProductComponentProps, ProductsTypes } from "../interface/productTypes";
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import useAuthStore from "zustand/authStore";
-import Checkout from "screens/Checkout";
-import { navigate } from "routers/NavigationService";
 
 const ProductComponent = memo(({ product, onPress }: ProductComponentProps) => {
     const { isDarkMode } = useAuthStore()

@@ -65,7 +65,7 @@ const MyStack: React.FC = () => {
                 }
             })} />
             <Stack.Screen name='ProductDetails' component={ProductDetails} options={({ route }) => ({
-                title: route?.params?.productId?.name,
+                title: (route.params as any)?.productId?.name,
                 headerLeft: () => (
                     <Pressable style={styles.backBtn} hitSlop={{ top: 30, right: 100, left: 100, bottom: 30 }} onPress={() => navigate("Main")}> <AntDesign name="arrowleft" size={30} color={isDarkMode === "dark" ? "#f1eae2" : "#124245"} /> </Pressable>
                 ),

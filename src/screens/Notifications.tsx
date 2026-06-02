@@ -13,10 +13,10 @@ import useAuthStore from 'zustand/authStore';
 type NotificationType = {
   title: string;
   description: string;
-  id: number;
-  read: boolean;
+  id?: number;
+  read?: boolean;
   icon: string;
-  timestamp: number;
+  timestamp?: number;
   timeAgo?: string;
 };
 
@@ -34,7 +34,8 @@ const Notification = () => {
   };
 
   useEffect(() => {
-    const getTimeAgo = (timestamp: number) => {
+    const getTimeAgo = (timestamp?: number) => {
+      if (!timestamp) return 'Just now';
       const now = Date.now();
       const diffInMs = now - timestamp;
       const diffInSec = Math.floor(diffInMs / 1000);
@@ -58,7 +59,7 @@ const Notification = () => {
   }, [notifications]);
 
   const markAsRead = () => {
-    if (!selectedNotif) return;
+    if (!selectedNotif || !selectedNotif.id) return;
 
     markNotificationAsRead(selectedNotif.id);
 
@@ -103,7 +104,7 @@ const Notification = () => {
       <Text style={[styles.header, { color: themeStyles.textColor }]}>Notifications</Text>
       <FlatList
         data={updatedNotifications}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: 20 }}
       />

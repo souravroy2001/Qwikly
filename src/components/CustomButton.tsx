@@ -1,5 +1,4 @@
 import { Text, Pressable, PressableProps, StyleSheet, useColorScheme } from 'react-native'
-import React from 'react'
 
 interface CustomButtonProps extends PressableProps {
     title: string,

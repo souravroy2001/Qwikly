@@ -1,6 +1,5 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import MyStack from './MyStack';
-import Profile from 'screens/Account';
 import CustomDrawerContent from './CustomDrawerContent';
 import Settings from 'screens/Settings';
 import Ionicons from 'react-native-vector-icons/Ionicons';

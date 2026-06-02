@@ -39,11 +39,11 @@ const Categories = () => {
     return Array.from(categoryMap.values());
   }, [data]);
 
-  const handleCategoryPress = (category) => {
+  const handleCategoryPress = (category: { name: string; imageUrl: string }) => {
     console.log('Selected category:', category.name);
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: { name: string; imageUrl: string } }) => (
     <Pressable
       style={[styles.card, { backgroundColor: themeStyles.backgroundColor }]}
       onPress={() => handleCategoryPress(item)}

@@ -6,7 +6,6 @@ import {
     FlatList,
     Pressable,
     StyleSheet,
-    Alert,
     Image,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -38,7 +37,7 @@ const Cart = () => {
 
     const calculateTotals = () => {
         const totalPrice = cartItems.reduce(
-            (sum, item) => sum + item.price * item.quantity,
+            (sum: number, item: ProductsTypes) => sum + Number(item.price) * item.quantity,
             0
         );
         const tax = totalPrice * TAX_PERCENT;

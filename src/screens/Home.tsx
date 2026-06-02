@@ -18,8 +18,6 @@ import { ProductsTypes } from '../interface/productTypes';
 import ProductComponent from '../components/ProductComponent';
 import { navigate } from 'routers/NavigationService';
 import useAuthStore from 'zustand/authStore';
-import Entypo from "react-native-vector-icons/Entypo";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import RenderCategoryItem from 'components/RenderCategoryItem';
 

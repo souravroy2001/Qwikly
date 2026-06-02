@@ -16,12 +16,17 @@ type Notification = {
   timeAgo?: string;
 };
 
-type OrderType = {
+export type OrderType = {
   orderId: string;
   total: number;
   items: ProductsTypes[];
   createdAt?: string;
   status?: string;
+  tracking?: {
+    carrier: string;
+    number: string;
+    estimatedDelivery: string;
+  };
 };
 
 type UserData = {
@@ -64,6 +69,8 @@ type AuthState = {
   cartItemDecreaseQuantity: (product: ProductsTypes) => void;
   cartItemRemove: (product?: ProductsTypes) => void;
   handleNotification: (notification: Notification) => void;
+  markNotificationAsRead: (id: number) => Promise<void>;
+  clearAllNotifications: () => Promise<void>;
   createOrder: (data: {
     orderId: string;
     total: number;
