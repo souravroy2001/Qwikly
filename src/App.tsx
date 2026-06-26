@@ -6,6 +6,7 @@
  */
 
 import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { navigationRef } from 'routers/NavigationService';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StyleSheet } from 'react-native';
@@ -45,73 +46,75 @@ function App(): React.JSX.Element {
     }, [])
 
     return (
-        <NavigationContainer ref={navigationRef}>
-            {!isLogin && showSplash ? (
-                <Splash />
-            ) : isLogin ? (
-                <RootStack.Navigator>
+        <SafeAreaProvider>
+            <NavigationContainer ref={navigationRef}>
+                {!isLogin && showSplash ? (
+                    <Splash />
+                ) : isLogin ? (
+                    <RootStack.Navigator>
 
-                    <RootStack.Screen name="DrawerNav" component={MyDrawer} options={{ headerShown: false }} />
+                        <RootStack.Screen name="DrawerNav" component={MyDrawer} options={{ headerShown: false }} />
 
-                    <RootStack.Screen name='Search' component={Search} options={() => ({
-                        title: "Search",
-                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
-                        headerTitleStyle: {
-                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
-                        },
-                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
-                    })} />
-                    <RootStack.Screen name='Notifications' component={Notifications} options={() => ({
-                        title: "Notifications",
-                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
-                        headerTitleStyle: {
-                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
-                        },
-                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
-                    })} />
-                    <RootStack.Screen name='Cart' component={Cart} options={() => ({
-                        title: "Cart",
-                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
-                        headerTitleStyle: {
-                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
-                        },
-                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
-                    })} />
-                    <RootStack.Screen name='Favorites' component={Favorites} options={() => ({
-                        title: "Favorites",
-                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
-                        headerTitleStyle: {
-                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
-                        },
-                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
-                    })} />
-                    <RootStack.Screen name='Checkout' component={Checkout} options={() => ({
-                        title: "Checkout",
-                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
-                        headerTitleStyle: {
-                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
-                        },
-                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
-                    })} />
-                    <RootStack.Screen name='OrderSuccess' component={OrderSuccess} options={() => ({
-                        title: "Checkout",
-                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
-                        headerTitleStyle: {
-                            color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
-                        },
-                        headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
-                    })} />
-                    <RootStack.Screen name='Shop' component={Shop} options={() => ({
-                        ...CustomHeader,
-                        headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
-                        headerLeft: () => false
-                    })} />
+                        <RootStack.Screen name='Search' component={Search} options={() => ({
+                            title: "Search",
+                            headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                            headerTitleStyle: {
+                                color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                            },
+                            headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                        })} />
+                        <RootStack.Screen name='Notifications' component={Notifications} options={() => ({
+                            title: "Notifications",
+                            headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                            headerTitleStyle: {
+                                color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                            },
+                            headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                        })} />
+                        <RootStack.Screen name='Cart' component={Cart} options={() => ({
+                            title: "Cart",
+                            headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                            headerTitleStyle: {
+                                color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                            },
+                            headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                        })} />
+                        <RootStack.Screen name='Favorites' component={Favorites} options={() => ({
+                            title: "Favorites",
+                            headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                            headerTitleStyle: {
+                                color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                            },
+                            headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                        })} />
+                        <RootStack.Screen name='Checkout' component={Checkout} options={() => ({
+                            title: "Checkout",
+                            headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                            headerTitleStyle: {
+                                color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                            },
+                            headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                        })} />
+                        <RootStack.Screen name='OrderSuccess' component={OrderSuccess} options={() => ({
+                            title: "Checkout",
+                            headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                            headerTitleStyle: {
+                                color: isDarkMode === "dark" ? "#f1eae2" : "#124245"
+                            },
+                            headerTintColor: isDarkMode === "dark" ? "#f1eae2" : "#124245",
+                        })} />
+                        <RootStack.Screen name='Shop' component={Shop} options={() => ({
+                            ...CustomHeader,
+                            headerStyle: { backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2" },
+                            headerLeft: () => false
+                        })} />
 
-                </RootStack.Navigator>
-            ) : (
-                <AuthNavigator />
-            )}
-        </NavigationContainer>
+                    </RootStack.Navigator>
+                ) : (
+                    <AuthNavigator />
+                )}
+            </NavigationContainer>
+        </SafeAreaProvider>
     );
 }
 

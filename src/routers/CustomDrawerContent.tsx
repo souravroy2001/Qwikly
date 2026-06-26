@@ -4,10 +4,12 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import useAuthStore from "zustand/authStore";
 import { closeDrawer } from "./NavigationService";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function CustomDrawerContent(props: DrawerContentComponentProps): React.JSX.Element {
     const [showOverlay, setShowOverlay] = useState(false);
     const { user, isDarkMode } = useAuthStore()
+    const insets = useSafeAreaInsets();
 
     return (
         <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: isDarkMode === "dark" ? "#124245" : "#f1eae2", flex: 1 }}>
@@ -17,7 +19,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps): React.JSX.Elem
                 justifyContent: 'flex-end',
                 position: "absolute",
                 right: 10,
-                top: 10,
+                top: insets.top + 10,
                 zIndex: 1
             }}>
 
